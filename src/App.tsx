@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import clsx from 'clsx'
 import {
   Cpu,
+  KeyRound,
   Link2,
   Shield,
   Activity,
@@ -14,6 +15,7 @@ import {
   crons,
   missingTools,
   projects,
+  security,
   skills,
   subAgents,
   systemHealth,
@@ -282,6 +284,85 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                       </div>
                     ))}
                   </div>
+                </div>
+              </div>
+            </Pane>
+
+            <Pane title="Security" icon={<KeyRound size={16} />}>
+              <div className="grid grid-cols-1 gap-2 font-mono text-xs">
+                <div className="rounded-xl border border-border/15 bg-card/20 px-3 py-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted/60">score</span>
+                    <span className={clsx('font-semibold', security.score >= 85 ? 'text-good' : security.score >= 70 ? 'text-warn' : 'text-bad')}>
+                      {security.score}
+                    </span>
+                  </div>
+                  <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-fg/10">
+                    <div
+                      className={clsx(
+                        'h-full rounded-full',
+                        security.score >= 85 ? 'bg-good' : security.score >= 70 ? 'bg-warn' : 'bg-bad'
+                      )}
+                      style={{ width: `${security.score}%` }}
+                    />
+                  </div>
+                </div>
+
+                <div className="rounded-xl border border-border/15 bg-card/20 px-3 py-2">
+                  <div className="text-muted/60">api.keys</div>
+                  <div className="mt-2 space-y-2">
+                    {security.apiKeys.map((k) => (
+                      <div key={k.name} className="flex items-start justify-between gap-3">
+                        <div>
+                          <div className="text-fg">{k.name}</div>
+                          <div className="text-[11px] text-muted/60">{k.note}</div>
+                        </div>
+                        <span className={clsx('font-semibold', k.status === 'ok' ? 'text-good' : k.status === 'warn' ? 'text-warn' : 'text-bad')}>
+                          {k.status}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="rounded-xl border border-border/15 bg-card/20 px-3 py-2">
+                  <div className="text-muted/60">alerts</div>
+                  <div className="mt-2 space-y-2">
+                    {security.alerts.map((a) => (
+                      <div key={a.title} className="rounded-lg border border-border/15 bg-black/5 px-2 py-2">
+                        <div className="flex items-center justify-between">
+                          <div className="text-fg">{a.title}</div>
+                          <span className={clsx('font-semibold', a.severity === 'high' ? 'text-bad' : 'text-warn')}>
+                            {a.severity}
+                          </span>
+                        </div>
+                        <div className="mt-1 text-[11px] text-muted/60">{a.note}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="rounded-xl border border-border/15 bg-card/20 px-3 py-2">
+                  <div className="text-muted/60">recent.access</div>
+                  <div className="mt-2 space-y-1">
+                    {security.access.map((x) => (
+                      <div key={`${x.when}-${x.ip}-${x.action}`} className="flex items-center justify-between">
+                        <span className="text-[11px] text-muted/60">{x.when} • {x.ip}</span>
+                        <span className={clsx('font-semibold', x.result === 'success' ? 'text-good' : 'text-bad')}>
+                          {x.action}:{x.result}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="rounded-xl border border-border/15 bg-card/20 px-3 py-2">
+                  <div className="text-muted/60">recommendations</div>
+                  <ul className="mt-2 space-y-1 text-[11px] text-muted/60">
+                    {security.recommendations.map((r) => (
+                      <li key={r}>- {r}</li>
+                    ))}
+                  </ul>
                 </div>
               </div>
             </Pane>
